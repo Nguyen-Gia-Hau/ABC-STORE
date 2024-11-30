@@ -1,0 +1,227 @@
+﻿@model WebBanHangOnline.Models.EF.Combo
+@using WebBanHangOnline.Models.EF
+@using Newtonsoft.Json
+@{
+    ViewBag.Title = "Chỉnh Sửa Phiếu Nhập Combo";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var i = 0;
+    List<Product> p = ViewBag.p;
+    var ListSp = p.Select(item => new
+    {
+        item.Title,
+        item.Id,
+        item.Quantity,
+        item.OriginalPrice,
+        item.Price,
+    }).ToList();
+
+    var LP = Newtonsoft.Json.JsonConvert.SerializeObject(ListSp);
+}
+
+@{
+    List<ComboDetail> ComboDetailNow = new List<ComboDetail>();
+    foreach (var z in Model.ComboDetails)
+    {
+        ComboDetailNow.Add(z);
+    }
+}
+<link rel="stylesheet" href="~/Content/assets/styles/CreateExam.css" />
+@section naviheader {
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin" class="nav-link">Trang Chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/category" class="nav-link">@ViewBag.Title</a>
+        </li>
+    </ul>
+}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>QUẢN LÝ COMBO</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">@ViewBag.Title</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        @*Xây dựng nội dung ở đây*@
+
+        <div class="ContainerCreateExam">
+            <form action="/admin/combo/edit" method="post">
+                <div class="form-horizontal">
+                    <h4>Phiếu Chỉnh Sửa Combo</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Tên Combo</label>
+                        <div class="col-md-10">
+                            <input type="text" name="TenCombo" class="form-control" value="@Model.Title" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Số Lượng Combo</label>
+                        <div class="col-md-10">
+                            <input type="text" name="SoLuongCombo" class="form-control" value="@Model.Quantity" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Phần Trăm Giảm</label>
+                        <div class="col-md-10">
+                            <input type="text" name="PhanTramGiam" class="form-control" value="@Model.PercentDec" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="CreatedDate" class="form-control" value="@Model.CreatedDate" />
+                        <input type="hidden" name="CreatedBy" class="form-control" value="@Model.CreatedBy" />
+                        <input type="hidden" name="Id" class="form-control" value="@Model.Id" />
+                        <input type="hidden" name="IsActive" class="form-control" value="@Model.IsActive" />
+                    </div>
+                    @*Thông tin phiếu nhập*@
+                    <table class="table table-bordered table-hover">
+                        <thead style="background-color:aquamarine">
+                            <tr class="text-center">
+                                <th>Mã Sản Phẩm</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Giá Gốc</th>
+                                <th>Giá Bán</th>
+                            </tr>
+                        </thead>
+                        <tbody id="Exams">
+                            @foreach (var item in Model.ComboDetails)
+                            {
+                                <tr class="text-center" id="Exam">
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-md-10" style="background-color: white;">
+                                                <input class="form-control" name="LProduct[@i].Id" id="@i" value="@item.ProductId" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-md-10" style="background-color: white;">
+                                                <input list="Titles" id="Title_@i" class="form-control" name="LProduct[@i].Title" value="@item.Product.Title">
+                                                <datalist id="Titles">
+                                                    <option value="">
+                                                </datalist>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-md-10" style="background-color: white;">
+                                                <input class="form-control" name="LProduct[@i].OriginalPrice" value="@item.Product.OriginalPrice" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-md-10" style="background-color: white;">
+                                                <input class="form-control" name="LProduct[@i].Price" value="@item.Product.Price" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 10px">
+                        <button type="submit" class="btn btn-primary">Cập Nhật</button>
+                    </div>
+                </div>
+            </form>
+            <button class="btn btn-primary" onclick="ThemCauHoi()" style="float: right">Thêm Sản Phẩm</button>
+        </div>
+        <div>
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+
+    </div>
+</div>
+@section scripts{
+    <script>
+        //phieu nhap
+        var Lquestion = @Html.Raw(LP);
+
+        const currentTime = document.querySelector("h1"),
+            content = document.querySelector(".content"),
+            selectMenu = document.querySelectorAll("datalist"),
+            setAlarmBtn = document.querySelector("button");
+        console.log(selectMenu);
+
+        for (let j = 0; j < selectMenu.length; j++) {
+            for (let i = 0; i < Lquestion.length; i++) {
+                let option = `<option value="${Lquestion[i].Title}">`;
+                selectMenu[j].firstElementChild.insertAdjacentHTML("afterend", option);
+            }
+
+            document.getElementById("Title_" + j).addEventListener("input", function () {
+                var selectedValue = this.value;
+                var selectedObject = Lquestion.find(function (item) {
+                    return item.Title === selectedValue;
+                });
+                var item = this.closest("tr"); // Tìm phần tử <tr> cha gần nhất
+                console.log(selectedObject);
+                var Einput = item.getElementsByTagName('INPUT');
+                Einput[0].value = selectedObject.Id;
+                Einput[2].value = selectedObject.OriginalPrice;
+                Einput[3].value = selectedObject.Price;
+            });
+        }
+    </script>
+
+    <script>
+        var j = '@Model.ComboDetails.Count()';
+        j = parseInt(j);
+        j -= 1;
+        var id = 0;
+        function ThemCauHoi() {
+
+            j += 1; // Tăng giá trị i lên 1
+
+            console.log("i sau khi tăng lên 1: " + j);
+
+            var examsForm = document.getElementById('Exams');
+            var examClone = document.getElementById('Exam').cloneNode(true);
+            var inputFields = examClone.getElementsByTagName('input');
+
+            // Cập nhật name của trường input để chứa giá trị mới của i
+            for (var a = 0; a < inputFields.length; a++) {
+                inputFields[a].name = "LProduct[" + j + "]." + inputFields[a].name.split(".")[1];
+                inputFields[a].value = '';
+            }
+            // Thêm bản sao vào Exams
+            examsForm.appendChild(examClone);
+
+            var newTitleInput = examClone.querySelector('input[name="LProduct[' + j + '].Title"]');
+            newTitleInput.addEventListener("input", function () {
+                var selectedValue = this.value; // Lấy giá trị mà bạn chọn trong input
+                var selectedObject = Lquestion.find(function (item) {
+                    return item.Title === selectedValue;
+                });
+                var item = this.parentElement.parentElement.parentElement.parentElement;
+                var Einput = item.getElementsByTagName('INPUT');
+                Einput[0].value = selectedObject.Id;
+                Einput[2].value = selectedObject.OriginalPrice;
+                Einput[3].value = selectedObject.Price;
+            });
+        }
+    </script>
+}
+

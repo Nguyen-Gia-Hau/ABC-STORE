@@ -1,0 +1,273 @@
+﻿@model WebBanHangOnline.Models.CreateAccountViewModel
+@using Microsoft.AspNet.Identity;
+@using Microsoft.AspNet.Identity.EntityFramework;
+@using WebBanHangOnline.Models;
+@{
+    ViewBag.Title = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "Quản Lý Tài Khoản";
+    var userStore = new UserStore<ApplicationUser>(new ApplicationDbContext());
+    var userManager = new UserManager<ApplicationUser>(userStore);
+    var user = userManager.FindByName(User.Identity.Name);
+    var ur = userManager.GetRoles(user.Id).ElementAt(0);
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/assets/styles/main_styles.css">
+<link rel="stylesheet" href="~/Content/assets/dist/css/adminlte.min.css">
+<link href="~/Content/assets/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<style>
+    .news_section_container {
+        margin-top: 180px;
+    }
+</style>
+<div class="container news_section_container">
+    <div class="row">
+        <div class="col">
+            <div class="breadcrumbs d-flex flex-row align-items-center">
+                <ul>
+                    <li>
+                        <a href="/" style="color:black;">Trang chủ</a>
+                        <a> <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
+                        <a>Thông Tin Cá Nhân</a>
+                    </li>
+                </ul>
+
+            </div>
+            <hr />
+        </div>
+        <div class="col-md-12">
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <!-- Profile Image -->
+                            <div class="card card-primary card-outline">
+                                <div class="card-body box-profile">
+                                    <div class="text-center">
+                                        <img class="profile-user-img img-fluid img-circle" src="~/Uploads/images/avatar5.png" alt="User profile picture">
+                                    </div>
+
+                                    <h3 class="profile-username text-center">@Model.FullName</h3>
+
+                                    <p class="text-muted text-center">@ur</p>
+
+                                    <ul class="list-group list-group-unbordered mb-3">
+                                        <li class="list-group-item">
+                                            <b style="color:red; font-weight:bold; font-size:20px;"><i class="fa fa-phone" aria-hidden="true"></i></b><a style="padding-left:10px;">@Model.Phone</a>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b style="color:red; font-weight:bold; font-size:20px;"><i class="fa fa-envelope-o" aria-hidden="true"></i></b><a style="padding-left:10px;">@Model.Email</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <div class="card card-primary">
+                                <div class="card-header" style="background-color: #fe4c50">
+                                    <h3 class="card-title">Thông Tin Tài Khoản</h3>
+                                </div>
+                                <div class="card-body">
+                                    <strong> Số lần mua hàng: </strong>
+                                    <p class="text-muted"> @Session["TotalCount"]</p>
+                                    <hr>
+                                    <strong>Tổng Số Tiền Đã Chi:</strong>
+                                    <p class="text-muted">@Session["totalAmount"]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header p-2">
+                                    <ul class="nav nav-pills">
+                                        <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Lịch Sử Mua Hàng</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#ttdh" data-toggle="tab">Đơn Hàng</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#vvc" data-toggle="tab">Ví Voucher</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Cập Nhật</a></li>
+                                    </ul>
+                                </div><!-- /.card-header -->
+                                <div class="card-body">
+                                    <div class="tab-content">
+                                        <div class="active tab-pane" id="activity">
+                                            @Html.Action("LichSuDonHang", "Review")
+                                            <!-- /.post -->
+                                        </div>
+                                        <!-- /.tab-pane -->
+                                        <div class="tab-pane" id="ttdh">
+                                            @*@Html.Action("TinhTrangDonHang", "Review")*@
+                                            <div class="col-md-12">
+                                                <div class="card">
+                                                    <div class="card-header p-2">
+                                                        <ul class="nav nav-pills">
+                                                            @*cho xac nhan, cho giao, dang giao, da giao, da huy, tra hang*@
+                                                            <li class="nav-item"><a class="nav-link active" href="#ChoXacNhan" data-toggle="tab">Chờ Xác Nhận</a></li>
+                                                            <li class="nav-item"><a class="nav-link" href="#DaXacNhan" data-toggle="tab">Đã Xác Nhận</a></li>
+                                                            <li class="nav-item"><a class="nav-link" href="#DangGiao" data-toggle="tab">Đang Giao</a></li>
+                                                            <li class="nav-item"><a class="nav-link" href="#DaGiao" data-toggle="tab">Đã Giao</a></li>
+                                                            <li class="nav-item"><a class="nav-link" href="#DaHuy" data-toggle="tab">Đã Hủy</a></li>
+                                                            <li class="nav-item"><a class="nav-link" href="#TraHang" data-toggle="tab">Trả Hàng</a></li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="tab-content">
+                                                            <div class="active tab-pane" id="ChoXacNhan">
+                                                                @Html.Action("TinhTrang", "Review", new { id = 0 })
+                                                            </div>
+                                                            <div class="tab-pane" id="ĐaXacNhan">
+                                                                @Html.Action("TinhTrang", "Review", new { id = 1 })
+                                                            </div>
+                                                            <div class="tab-pane" id="DangGiao">
+                                                                @Html.Action("TinhTrang", "Review", new { id = 2 })
+                                                            </div>
+                                                            <div class="tab-pane" id="DaGiao">
+                                                                @Html.Action("TinhTrang", "Review", new { id = 3 })
+                                                            </div>
+                                                            <div class="tab-pane" id="DaHuy">
+                                                                @Html.Action("TinhTrang", "Review", new { id = -1 })
+                                                            </div>
+                                                            <div class="tab-pane" id="TraHang">
+                                                                @Html.Action("TinhTrang", "Review", new { id = 4 })
+                                                            </div>
+                                                        </div>
+                                                        <!-- /.tab-content -->
+                                                    </div><!-- /.card-body -->
+                                                </div>
+                                                <!-- /.card -->
+                                            </div>
+                                        </div>
+                                        <!-- /.tab-pane -->
+                                        <div class="tab-pane" id="vvc">
+                                            <div class="col-md-12">
+                                                <div class="card">
+                                                    <div class="card-header p-2">
+                                                        <ul class="nav nav-pills">
+                                                            @*cho xac nhan, cho giao, dang giao, da giao, da huy, tra hang*@
+                                                            <li class="nav-item col-md-6"><a class="nav-link active text-center" href="#MaGiamGia" data-toggle="tab">Mã Giảm Giá</a></li>
+                                                            <li class="nav-item col-md-6"><a class="nav-link text-center" href="#MaVanChuyen" data-toggle="tab">Mã Vận Chuyển</a></li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div class="card-body">
+                                                        <div class="tab-content">
+                                                            <div class="active tab-pane" id="MaGiamGia">
+                                                                @Html.Action("Partial_User_Voucher", "Voucher", new { type = 1 })
+                                                            </div>
+                                                            <div class="tab-pane" id="MaVanChuyen">
+                                                                @Html.Action("Partial_User_Voucher", "Voucher", new { type = 2 })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane" id="settings">
+                                            @using (Html.BeginForm("PostProfile", "Account"))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                @Html.ValidationSummary(false)
+                                                <div class="form-group text-center">
+                                                    <h3>Cập Nhật Thông Tin</h3>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1" class="form-label">FullName</label>
+                                                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="FullName" value="@Model.FullName">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1" class="form-label">UserName</label>
+                                                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="UserName" value="@Model.UserName" readonly>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1" class="form-label">Phone Number</label>
+                                                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="Phone" value="@Model.Phone">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1" class="form-label">Email</label>
+                                                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="Email" value="@Model.Email" readonly>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-success">Cập Nhật</button>
+                                                </div>
+                                            }
+                                        </div>
+                                        <!-- /.tab-pane -->
+                                    </div>
+                                    <!-- /.tab-content -->
+                                </div><!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </section>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('.btnHuy').on('click', function () {
+                var id = $(this).data('id');
+                var conf = confirm("Bạn có chắc muốn hủy đơn hàng không?");
+                if (conf === true) {
+                    $.ajax({
+                        url: '/Review/CancelOrder',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (rs) {
+                            if (rs.success) {
+                                location.reload();
+                                alert("Bạn đã hủy thành công đơn hàng này!");
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.btnTraHang').on('click', function () {
+                var id = $(this).data('id');
+                var conf = confirm("Bạn có chắc muốn trả hàng không?");
+                if (conf === true) {
+                    $.ajax({
+                        url: '/Review/ReturnOrder',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (rs) {
+                            if (rs.success) {
+                                location.reload();
+                                alert("Bạn đã trả đơn hàng thành công!");
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    @*<script>
+            var TraHang = document.getElementById('btnTraHang');
+            TraHang.addEventListener('click', function () {
+                var id = $(this).data('id');
+                var conf = confirm("Bạn có chắc muốn trả hàng không?");
+                if (conf === true) {
+                    $.ajax({
+                        url: '/Review/ReturnOrder',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function (rs) {
+                            if (rs.success) {
+                                location.reload();
+                                alert("Bạn đã trả đơn hàng thành công!");
+                            }
+                        }
+                    });
+                }
+            });
+        </script>*@
+}

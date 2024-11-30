@@ -1,0 +1,280 @@
+﻿@model PagedList.PagedList<WebBanHangOnline.Models.EF.Order>
+@using PagedList.Mvc;
+@using PagedList;
+@{
+    ViewBag.Title = "Danh Sách Đơn Đặt Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section naviheader {
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/home/index" class="nav-link">Trang Chủ</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/admin/order/index" class="nav-link">@ViewBag.Title</a>
+        </li>
+    </ul>
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-12" style="display:flex; flex-direction:row; justify-content:center;">
+                <h1 style="font-weight:bold;">QUẢN LÝ ĐƠN ĐẶT HÀNG</h1>
+            </div>
+            <div class="col-sm-12">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/admin/home/index">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">@ViewBag.Title</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">@ViewBag.Title</h3>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="input-group input-group-sm">
+                        <span style=" border: 1px solid black; border-color: grey;background-color: gray; border-radius:5px;">
+                            <i class="fa fa-search" aria-hidden="true" style="padding: 10px;"></i>
+                        </span>
+                        <input type="text" id="Searchtext" class="Searchtext" name="Searchtext" placeholder="Nhập nội dung tìm kiếm..." style="width:300px;" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    @using (Html.BeginForm("index", "Order", FormMethod.Get, new { }))
+                    {
+                        <ul style="list-style-type:none; display:flex;">
+                            <li style="padding-left:10px;">@Html.CheckBox("Cod") <span> COD</span></li>
+                            <li style="padding-left:10px;">@Html.CheckBox("Banking") <span> BANKING</span></li>
+                            <li style="padding-left:10px;">@Html.CheckBox("Paid")<span> Đã Thanh Toán</span></li>
+                            <li style="padding-left:10px;">@Html.CheckBox("UnPaid")<span> Chưa Thanh Toán</span></li>
+                            <li style="padding-left:10px;">
+                                <button type="submit" class="btn btn-info btn-flat" style="height:30px; display:flex; justify-content:center; align-items:center; border-radius:3px;">Lọc</button>
+                            </li>
+                        </ul>
+
+                    }
+                </div>
+            </div>
+            <table class="table table-hover table-bordered" style="margin-top:10px;">
+                <thead style="background-color:aquamarine;">
+                    <tr class="text-center">
+                        <th><input type="checkbox" id="SelectAll" /></th>
+                        <th>STT</th>
+                        <th>@Html.ActionLink("Mã Đơn Hàng", "Index", new { SO = ViewBag.Code })</th>
+                        <th>@Html.ActionLink("Tổng Tiền", "Index", new { SO = ViewBag.Total })</th>
+                        <th>@Html.ActionLink("Phương Thức Thanh Toán", "Index", new { SO = ViewBag.PT })</th>
+                        <th>@Html.ActionLink("Trạng Thái Thanh Toán", "Index", new { SO = ViewBag.TT })</th>
+                        <th>@Html.ActionLink("Ngày Tạo", "Index", new { SO = ViewBag.CreatedDate })</th>
+                        <th>Tình Trạng Đơn Hàng</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    @if (Model != null && Model.Any())
+                    {
+                        var i = (ViewBag.Page - 1) * ViewBag.PageSize + 1;
+                        foreach (var item in Model)
+                        {
+                            <tr class="text-center">
+                                <td><input type="checkbox" id="cbkItem" value="@item.Id" /></td>
+                                <td>@i</td>
+                                <td>@item.Code</td>
+                                <td>@WebBanHangOnline.Common.Common.FormatNumber(item.TotalAmount, 0)đ</td>
+                                @if (item.TypePayment == 1)
+                                {
+                                    <td><span class="btn btn-sm" style="background-color:#c05104; height:25px; justify-content:center; align-items:center; display:flex; color:white;">COD</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="btn btn-sm" style="background-color:#e5c80a; height: 25px; justify-content: center; align-items: center; display: flex; color: white;">BANKING</span></td>
+                                }
+                                <td>
+                                    @if (item.Status == "1")
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#fe2203; height: 25px; justify-content: center; align-items: center; display: flex; color: white;">Chưa Thanh Toán</span>
+                                    }
+                                    @if (item.Status == "2")
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#00e600; height: 25px; justify-content: center; align-items: center; display: flex; color: white;">Đã Thanh Toán</span>
+                                    }
+                                    @if (item.Status == "3")
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#00e600; height: 25px; justify-content: center; align-items: center; display: flex; color: white;">Hoàn Thành</span>
+                                    }
+                                    @if (item.Status == "4")
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#fe2203; height: 25px; justify-content: center; align-items: center; display: flex; color: white;">Hủy</span>
+                                    }
+
+                                </td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (item.OrderStatus == 0)
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#00e600; height: 25px; justify-content: center; align-items: center; display: flex; color: white;" data-id="@item.Id">Chờ Xác Nhận</span>
+                                    }
+                                    @if (item.OrderStatus == 1)
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#00e600; height: 25px; justify-content: center; align-items: center; display: flex; color: white;" data-id="@item.Id">Đã Xác Nhận</span>
+                                    }
+                                    @if (item.OrderStatus == 2)
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#00e600; height: 25px; justify-content: center; align-items: center; display: flex; color: white;" data-id="@item.Id">Đang Giao</span>
+                                    }
+                                    @if (item.OrderStatus == 3)
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#00e600; height: 25px; justify-content: center; align-items: center; display: flex; color: white;" data-id="@item.Id">Đã Giao</span>
+                                    }
+                                    @if (item.OrderStatus == -1)
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#fe2203; height: 25px; justify-content: center; align-items: center; display: flex; color: white;" data-id="@item.Id">Đã Hủy</span>
+                                    }
+                                    @if (item.OrderStatus == 4)
+                                    {
+                                        <span class="btn btn-sm" style="background-color:#fe2203; height: 25px; justify-content: center; align-items: center; display: flex; color: white;" data-id="@item.Id">Đã Trả Hàng</span>
+                                    }
+                                </td>
+                                <td style="width:200px;">
+                                    <a href="/admin/order/view/@item.Id" class="btn btn-sm btn-success"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                    @*<a href="#" class="btn btn-sm btn-danger btnCapNhat" data-id="@item.Id">Cập Nhật</a>*@
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4">Không có bản ghi nào</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-3">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                </div>
+                <div class="col-5"></div>
+            </div>
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+
+        </div>
+        <!-- /.card-footer-->
+    </div>
+    <!-- /.card -->
+
+</section>
+<!-- /.content -->
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Cập Nhật Trạng Thái</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="txtOrderId" value="0" />
+                <div class="form-group">
+                    <label>Trạng Thái</label>
+                    <select class="form-control" id="ddTrangThai">
+                        <option value="2">Đã Thanh Toán</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary btnLuu">Lưu Thay Đổi</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#Searchtext").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.btnCapNhat', function () {
+                var id = $(this).data("id");
+                $('#txtOrderId').val(id);
+                $('#modal-default').modal('show');
+            });
+
+            $('body').on('click', '.btnLuu', function () {
+                var id = $('#txtOrderId').val();
+                var tt = $('#ddTrangThai').val();
+                $.ajax({
+                    url: '/admin/order/UpdateTT',
+                    type: 'POST',
+                    data: { id: id, trangthai: tt },
+                    success: function (rs) {
+                        if (rs.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            });
+            $('body').on('click', '.btnChange', function () {
+                var id = $(this).data('id');
+                $.ajax({
+                    url: '/admin/order/ChangeOrderStatus',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (rs) {
+                        if (rs.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            });
+            $('body').on('change', '#SelectAll', function () {
+                var checkStatus = this.checked;
+                var checkbox = $(this).parents('.card-body').find('tr td input:checkbox');
+                checkbox.each(function () {
+                    this.checked = checkStatus;
+                    if (this.checked) {
+                        checkbox.attr('selected', 'checked');
+                    }
+                    else {
+                        checkbox.attr('selected', '');
+                    }
+                });
+            });
+        });
+    </script>
+
+}

@@ -1,0 +1,292 @@
+﻿@model WebBanHangOnline.Models.EF.Product
+@using WebBanHangOnline.Models.EF
+@{
+    ViewBag.Title = Model.SeoTitle;
+    ViewBag.SeoDescription = Model.SeoDescription ?? Model.Title;
+    ViewBag.SeoKeyWord = Model.SeoKeywords ?? Model.Title;
+    HashSet<string> cl = new HashSet<string>();
+    foreach(var item in Model.ProductSizes)
+    {
+        if(item.Quantity>0 && item.ColorName != null)
+        {
+            cl.Add(item.ColorName);
+        }
+
+    }
+    HashSet<string> sz = new HashSet<string>();
+    foreach (var item in Model.ProductSizes)
+    {
+        if (item.Quantity > 0 && item.SizeName != null)
+        {
+            sz.Add(item.SizeName);
+        }
+    }
+}
+<link rel="stylesheet" type="text/css" href="~/Content/assets/styles/single_styles.css">
+<link rel="stylesheet" type="text/css" href="~/Content/assets/styles/single_responsive.css">
+<style>
+    #colorButtons {
+        display: flex;
+    }
+
+    .colorButton {
+        width: 30px;
+        height: 30px;
+        margin-right: 5px;
+        border: none;
+    }
+    .swiper-container {
+        -webkit-font-smoothing: antialiased;
+        text-size-adjust: 100%;
+        text-rendering: optimizeLegibility;
+        --swiper-theme-color: #007aff;
+        --swiper-navigation-size: 44px;
+        color: #4a4a4a;
+        font-size: 1em;
+        font-weight: 400;
+        line-height: 1.5;
+        font-family: Roboto,sans-serif !important;
+        box-sizing: inherit;
+        list-style: none;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        padding: 10px;
+        width: 100%;
+    }
+</style>
+@if (Model != null)
+{
+
+    <div class="container single_product_container">
+        <div class="row">
+            <div class="col">
+
+                <!-- Breadcrumbs -->
+
+                <div class="breadcrumbs d-flex flex-row align-items-center">
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/danh-muc-san-pham/@Model.ProductCategory.Alias-@Model.ProductCategoryId"><i class="fa fa-angle-right" aria-hidden="true"></i>@Model.ProductCategory.Title</a></li>
+                        <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@Model.Title</a></li>
+                        <li class="active"><a href="#"><i class="fa fa-angle-right" aria-hidden="true"></i>@Model.ProductCode</a></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom:70px;">
+            <div class="col-lg-7">
+                @if (Model.ProductImage != null && Model.ProductImage.Any())
+                {
+                    <div class="single_product_pics">
+                        <div class="row">
+                            <div class="col-lg-3 thumbnails_col order-lg-1 order-2">
+                                <div class="single_product_thumbnails">
+                                    <ul>
+                                        @foreach (var item in Model.ProductImage)
+                                        {
+                                            if (item.IsDefault)
+                                            {
+                                                <li class="active"><img src="@item.Image" alt="" data-image="@item.Image"></li>
+                                            }
+                                            else
+                                            {
+                                                <li><img src="@item.Image" alt="" data-image="@item.Image"></li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-9 image_col order-lg-2 order-1">
+                                <div class="single_product_image">
+                                    <div class="single_product_image_background" style="background-image:url(@Model.ProductImage.FirstOrDefault(x=>x.IsDefault).Image)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-5">
+                <div class="product_details">
+                    <div class="product_details_title">
+                        <h2>@Model.Title</h2>
+                        <p>@Model.Description</p>
+                        <p><b>@Model.ViewCount</b> lượt xem</p>
+                    </div>
+                    <div class="row">
+                        @if (Model.IsHot == true)
+                        {
+                            <a class="btn btn-sm" style="background-color: #fe4c50; color: white; width: 50px; height: 25px; justify-content: center; align-items: center;display:flex; ">Hot</a>
+                        }
+                        @if (Model.IsSale == true)
+                        {
+                            <a class="btn btn-sm" style="background-color: #51a042; color: white; width: 50px; height: 25px; justify-content: center; align-items: center; display: flex; margin-left:5px;">Sale</a>
+                        }
+                        @if (Model.IsFeature == true)
+                        {
+                            <a class="btn btn-sm" style="background-color: #0066ff; color: white; width: 55px; height: 25px; justify-content: center; align-items: center; display: flex; margin-left: 5px;">Feature</a>
+                        }
+                    </div>
+
+                    @*Kích Cỡ*@
+                    <div class="row" style="margin-top:30px;align-items:center;">
+                        <h5>Kích Cỡ:  </h5>
+                        @foreach (var item in sz)
+                        {
+                            <a href="#" class="btn btn-sm size_value" data-size="@item" style="border:1px solid red; margin-left:5px;">@item</a>
+                        }
+                        
+                    </div>
+
+                    @*Màu Sắc*@
+                    <div class="row" style="margin-top:30px;align-items:center;">
+                        <h5>Màu Sắc:  </h5>
+                        @foreach (var item in cl)
+                        {
+                            <a href="#" class="btn btn-sm color_value" data-color="@item" style="border:1px solid red; margin-left:5px;">@item</a>
+                        }
+                        
+                    </div>
+
+                    <div class="row" style="margin-top:30px;">
+                        <input type="text" id="label_666" readonly style="border:none; width:80px;" />
+                        <input type="text" name="SizeName" id="value_size_product" readonly style="border:none; width:20px;" />
+                        <input type="text" id="label_777" readonly style="border:none; width:10px;"/>
+                        <input type="text" name="ColorName" readonly id="value_color_product" style="border:none; width:80px;" />
+                    </div>
+
+                    @if (Model.PriceSale > 0)
+                    {
+                        <div class="original_price">@WebBanHangOnline.Common.Common.FormatNumber(Model.Price, 0)</div>
+                        <div class="product_price">@WebBanHangOnline.Common.Common.FormatNumber(Model.PriceSale, 0)</div>
+                    }
+                    else
+                    {
+                        <div class="product_price">@WebBanHangOnline.Common.Common.FormatNumber(Model.Price, 0)</div>
+                    }
+
+
+                    <ul class="star_rating">
+                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                        <li><i class="fa fa-star" aria-hidden="true"></i></li>
+                        <li><i class="fa fa-star-o" aria-hidden="true"></i></li>
+                    </ul>
+
+                    <div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
+                        <span>Quantity:</span>
+                        <div class="quantity_selector">
+                            <span class="minus"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                            <span id="quantity_value">1</span>
+                            <span class="plus"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                        </div>
+                        <div class="red_button add_to_cart_button"><a href="#" class="btnAddToCart" data-id="@Model.Id">Thêm Vào Giỏ Hàng</a></div>
+                        <div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <hr />
+        <div class="row" style="margin-top: 70px;">
+            @Html.Action("PartialView_Combo", "Products", new { ProductId = Model.Id })
+        </div>
+    </div>
+
+    // phan khac
+    <div class="tabs_section_container">
+
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="tabs_container">
+                        <ul class="tabs d-flex flex-sm-row flex-column align-items-left align-items-md-center justify-content-center">
+                            <li class="tab active" data-active-tab="tab_1"><span>Description</span></li>
+                            @*<li class="tab" data-active-tab="tab_2"><span>Additional Information</span></li>*@
+                            <li class="tab" data-active-tab="tab_3"><span>Reviews (@ViewBag.CountReview)</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+
+                    <!-- Tab Description -->
+
+                    <div id="tab_1" class="tab_container active">
+                        <div class="row">
+                            @Html.Raw(Model.Detail)
+                        </div>
+                    </div>
+
+                    <!-- Tab Reviews -->
+
+                    <div id="tab_3" class="tab_container">
+                        <div class="row">
+
+                            <!-- User Reviews -->
+
+                            <div class="col-lg-6 reviews_col">
+                                @Html.Action("_Load_Review", "Review", new { productId = Model.Id })
+                            </div>
+
+                            <!-- Add Review -->
+
+                            <div class="col-lg-6 add_review_col">
+                                @Html.Action("_Review", "Review", new { productId = Model.Id })
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+@section scripts {
+    <script src="~/Content/assets/js/single_custom.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('body').on('click', '.size_value', function (e) {
+                e.preventDefault();
+                var sz = $(this).data("size");
+                $('#value_size_product').val(sz);
+                $('#label_666').val("Đã Chọn");
+                $('#label_777').val("-");
+            });
+
+            $('body').on('click', '.color_value', function (e) {
+                e.preventDefault();
+                var cl = $(this).data('color');
+                $('#value_color_product').val(cl);
+                $('#label_666').val("Đã Chọn");
+                $('#label_777').val("-");
+            });
+            $('.btnAddComboToCart').on('click', function () {
+                var id = $(this).data('id');
+                var ids = $('.value_list_idp').val();
+                $.ajax({
+                    url: '/ShoppingCart/AddComboToCart',
+                    type: 'POST',
+                    data: { id: id, ids: ids },
+                    success: function (rs) {
+                        if (rs.success) {
+                            $('#checkout_items').html(rs.Count);
+                            alert(rs.msg);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
+

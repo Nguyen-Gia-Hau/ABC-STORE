@@ -1,0 +1,67 @@
+﻿@model IEnumerable<WebBanHangOnline.Models.ShoppingCartItem>
+<table class="table">
+    <tr class="text-center">
+        <th>STT</th>
+        <th>Ảnh Sản Phẩm</th>
+        <th>Tên Sản Phẩm</th>
+        <th>Kích Cỡ</th>
+        <th>Màu Sắc</th>
+        <th>Danh Mục</th>
+        <th>Giá</th>
+        <th style="width:100px;">Số Lượng</th>
+        <th>Thành Tiền</th>
+        <th style="width:200px;">Thao Tác</th>
+    </tr>
+    @if (Model != null && Model.Any())
+    {
+        var i = 0;
+        var TongGioHang = decimal.Zero;
+        decimal TienShip = 30000;
+        foreach (var item in Model)
+        {
+            TongGioHang += item.TotalPrice;
+            Session["TongHoaDon"] = TongGioHang;
+            Session["Ship"] = TienShip;
+            <tr class="text-center" id="trow_@item.ProductId">
+                <td>@(i+1)</td>
+                <td><img src="@item.ProductImg" width="60" /></td>
+                <td><a href="/chi-tiet/@item.Alias-p@(item.ProductId)">@item.ProductName</a></td>
+                <td>@item.ProductSize</td>
+                <td>@item.ProductColor</td>
+                <td>@item.CategoryName</td>
+                <td>@WebBanHangOnline.Common.Common.FormatNumber(item.Price, 0)</td>
+                <td><input type="number" value="@item.Quantity" min="1" class="form-control" id="Quantity_@item.ProductId"/></td>
+                <td>@WebBanHangOnline.Common.Common.FormatNumber(item.TotalPrice, 0)</td>
+                <td>
+                    <a href="#" data-id="@item.ProductId" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+                    <a href="#" data-id="@item.ProductId" class="btn btn-sm btn-success btnUpdate">Cập Nhật</a>
+                </td>
+            </tr>
+            i++;
+        }
+        if(Session["TongGioHang"] != null)
+        {
+            TongGioHang = (decimal)Session["TongGioHang"];
+        }
+        if(Session["TienShip"] != null)
+        {
+            TienShip = (decimal)Session["TienShip"];
+        }
+        <tr>
+            <th colspan="6" class="text-right" style="color:red; font-size:18px;">Tổng Giỏ Hàng: </th>
+            <th class="text-center" style="font-size:18px">@WebBanHangOnline.Common.Common.FormatNumber(TongGioHang, 0)</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th colspan="6" class="text-right" style="color:red; font-size:18px;">Phí Vận Chuyển: </th>
+            <th class="text-center" style="font-size:18px">@WebBanHangOnline.Common.Common.FormatNumber(TienShip, 0)</th>
+            <th></th>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <th colspan="7">Không có sản phẩm nào trong giỏ hàng !!!</th>
+        </tr>
+    }
+</table>

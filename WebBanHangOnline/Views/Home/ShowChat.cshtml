@@ -1,0 +1,137 @@
+﻿@using WebBanHangOnline.Models;
+@using WebBanHangOnline.Models.EF
+@model IEnumerable<Message>
+@{
+    ViewBag.Title = "ShowChat";
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+    ApplicationDbContext db = new ApplicationDbContext();
+}
+
+<div class="col-md-3">
+    <div class="card card-primary card-outline direct-chat direct-chat-primary">
+        <div class="card-header">
+
+            <div class="card-tools">
+                
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <!-- Conversations are loaded here -->
+            <div class="direct-chat-messages">
+                @foreach (var item in Model)
+                {
+                    if (item.UserId == ViewBag.UserId)
+                    {
+                        <div class="direct-chat-msg right">
+                            <div class="direct-chat-infos clearfix">
+                                <span class="direct-chat-name float-right">@db.Users.FirstOrDefault(x => x.Id == item.UserId).FullName</span>
+                                <span class="direct-chat-timestamp float-left">@item.TimesChat</span>
+                            </div>
+                            <div class="direct-chat-text">
+                                @item.Content
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="direct-chat-msg">
+                            <div class="direct-chat-infos clearfix">
+                                <span class="direct-chat-name float-left">@db.Users.FirstOrDefault(x => x.Id == item.UserId).FullName</span>
+                                <span class="direct-chat-timestamp float-right">@item.TimesChat</span>
+                            </div>
+                            <div class="direct-chat-text">
+                               @item.Content
+                            </div>
+                        </div>
+
+
+                    }
+                }
+              
+            </div>
+            <!--/.direct-chat-messages-->
+            <!-- Contacts are loaded here -->
+            <div class="direct-chat-contacts">
+                <ul class="contacts-list">
+                    <li>
+                        <a href="#">
+                            <img class="contacts-list-img" src="../dist/img/user1-128x128.jpg" alt="User Avatar">
+                            <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                    Count Dracula
+                                    <small class="contacts-list-date float-right">2/28/2015</small>
+                                </span>
+                                <span class="contacts-list-msg">How have you been? I was...</span>
+                            </div>
+                            <!-- /.contacts-list-info -->
+                        </a>
+                    </li>
+                    <!-- End Contact Item -->
+                </ul>
+                <!-- /.contatcts-list -->
+            </div>
+            <!-- /.direct-chat-pane -->
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+            <form action="#" method="post">
+                <div class="row">
+                    <input style="width:287px; margin-right:10px;" type="text" name="message" placeholder="Type Message ..." class="form-control" id="txtMessage">
+                    <span class="input-group-append">
+                        <button type="submit" class="btn btn-primary" id="btnSend">Send</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+        <!-- /.card-footer-->
+    </div>
+</div>
+
+@section scripts {
+    @* Chat start*@
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+                var name = '@ViewBag.Name';
+                var idRoom = '@ViewBag.IdRoom';
+                var UserId = '@ViewBag.UserId';
+                $(function () {
+                    var chat = $.connection.Chat;
+                    console.log(chat);
+                    loadClient(chat);
+                    $.connection.hub.start().done(function () {
+                        chat.server.connect(name);
+                        chat.server.joinRoom(idRoom);
+                        $('#btnSend').click(function () {
+                            var mess = $('#txtMessage').val();
+                            //alert(mess);
+                            chat.server.message(name, mess, idRoom, UserId);
+                            $('#txtMessage').val('').focus('');
+                        });
+                    });
+
+                })
+
+                function loadClient(chat) {
+                    // sửa lại cái phần này làm sao để nhận dc cái id của người dùng để còn hiện cho đúng bên
+                    chat.client.message = function (name, msg,id,UserId) {
+                        var currentDate = new Date();  // Tạo đối tượng Date
+                        var formattedDate = currentDate.toLocaleDateString();
+                        var ms = `<div class="direct-chat-msg">
+                                    <div class="direct-chat-infos clearfix">
+                                    <span class="direct-chat-name float-right">`+ name + ` </span>
+                                    <span class="direct-chat-timestamp float-left">`+ formattedDate +`</span>
+                                    </div>
+                                    <div class="direct-chat-text">
+                                        `+ msg +`
+                                    </div>
+                                </div>`;
+                        console.log(ms);
+                        $(".direct-chat-messages").append(ms);
+                    };
+                }
+    </script>
+
+    @* Chat end*@
+}

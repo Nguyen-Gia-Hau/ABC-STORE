@@ -1,0 +1,47 @@
+﻿@model IEnumerable<WebBanHangOnline.Models.EF.Order>
+@{ 
+    ViewBag.Idr = 0;
+}
+@if (Model != null)
+{
+    var i = 1;
+    var s = decimal.Zero;
+    <table class="table table-bordered table-hover">
+        <thead style="background-color: #fe4c50; color:white;">
+            <tr class="text-center">
+                <th>STT</th>
+                <th>Mã DH</th>
+                <th>Ngày Mua</th>
+                <th>Tổng Hóa Đơn</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="text-center">
+                    <td>@i</td>
+                    <td>@item.Code</td>
+                    <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                    <td>@WebBanHangOnline.Common.Common.FormatNumber(item.TotalAmount, 0)đ</td>
+                    @if (item.OrderStatus == 0)
+                    {
+                        <td>
+                            <button class="btn btn-sm btn-danger btnChange btnHuy" data-id="@item.Id">Hủy đơn hàng</button>
+                        </td>
+                    }
+                    else if (item.OrderStatus == 3)
+                    {
+                        <td>
+                            <button class="btn btn-sm btn-danger btnChange btnTraHang" data-id="@item.Id">Trả Hàng</button>
+                        </td>
+                    }
+                </tr>
+                i++;
+                s += item.TotalAmount;
+            }
+        </tbody>
+    </table>
+    ViewBag.Cnt = i;
+    ViewBag.TtBuy = s;
+}

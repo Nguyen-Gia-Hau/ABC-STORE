@@ -1,0 +1,109 @@
+﻿@model WebBanHangOnline.Models.EF.Posts
+@{
+    ViewBag.Title = "Chi Tiết Bài Viết";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/assets/styles/main_styles.css">
+<style>
+    .news_section_container {
+        margin-top: 180px;
+    }
+
+    .title-news {
+        font-size: 24px;
+        border-bottom: 1px solid;
+        padding: 15px 0;
+        margin-bottom: 25px;
+    }
+
+    .img-box {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .row-item-new {
+        margin-bottom: 20px;
+    }
+
+    .content-box {
+        margin-right: 20px;
+    }
+</style>
+<div class="container news_section_container">
+    @if (Model != null)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="title-news">@Model.Title</h1>
+            </div>
+            @if (Model.Image != null)
+            {
+                <div class="col-md-12">
+                    <img src="@Model.Image" style="width:100%; height:100%;" />
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                @Model.Description
+            </div>
+            <div class="col-md-12">
+                @Html.Raw(Model.Detail)
+            </div>
+        </div>
+        <hr />
+        if (Model.Alias == "khuyen-mai" && User.Identity.IsAuthenticated)
+        {
+            <div class="row">
+                <h1>Voucher</h1>
+            </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header p-2">
+                        <ul class="nav nav-pills">
+                            <li class="nav-item col-md-6" style="text-align:center;"><a class="nav-link active" href="#activity" data-toggle="tab">Mã Giảm Giá</a></li>
+                            <li class="nav-item col-md-6" style="text-align:center;"><a class="nav-link" href="#ttdh" data-toggle="tab">Mã Vận Chuyển</a></li>
+                        </ul>
+                    </div><!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="active tab-pane" id="activity">
+                                @Html.Action("Partial_Voucher", "Voucher", new { type = 1 })
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="ttdh">
+                                @Html.Action("Partial_Voucher", "Voucher", new { type = 2 })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.btnGainVoucher', function () {
+                var id = $(this).data('id');
+                //console.log(id);
+                $.ajax({
+                    url: '/Voucher/UpdateQuantityVoucher',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (rs) {
+                        if (rs.success) {
+                            alert("Voucher vừa được thêm vào ví Voucher của bạn.");
+                            location.reload();
+                        }
+                        else {
+                            alert("Voucher đã tồn tại trong ví Voucher của bạn.");
+                            location.reload();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
+
